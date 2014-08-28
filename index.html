@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>TS3 UpdateScript by TS3Tools</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>TS3 UpdateScript</h1>
+        <h2>Automate all update processes for your TeamSpeak 3 server instances</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/TS3Tools/TS3UpdateScript/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/TS3Tools/TS3UpdateScript/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/TS3Tools/TS3UpdateScript" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h3>
+<a name="developers" class="anchor" href="#developers"><span class="octicon octicon-link"></span></a>Developers</h3>
+
+<p>Sebastian Kraetzig [<a href="mailto:info@ts3-tools.info">info@ts3-tools.info</a>]</p>
+
+<h3>
+<a name="what-is-the-ts3-updatescript" class="anchor" href="#what-is-the-ts3-updatescript"><span class="octicon octicon-link"></span></a>What is the TS3 UpdateScript?</h3>
+
+<p>It's a bash script which checks, if a newer version for your TeamSpeak 3 server is available. If yes, you can choose, if the script should update the server or not. You also have some parameters like "delete old logs files" and so on. Well... If you don't want to update your TeamSpeak 3 server manually, you can use this script. This script is doing ALL steps for a correct update process of your TeamSpeak 3 server.</p>
+
+<h3>
+<a name="stay-tuned" class="anchor" href="#stay-tuned"><span class="octicon octicon-link"></span></a>Stay tuned!</h3>
+
+<p>Official Project Homepage: <a href="http://www.ts3-tools.info">www.ts3-tools.info</a></p>
+
+<p>facebook Fanpage: <a href="https://www.facebook.com/TS3Tools">https://www.facebook.com/TS3Tools</a></p>
+
+<p>GitHub: <a href="https://github.com/TS3Tools/TS3UpdateScript/">https://github.com/TS3Tools/TS3UpdateScript/</a></p>
+
+<h3>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h3>
+
+<ul>
+<li>Linux (tested on Debian based systems such as Debian and Ubuntu, but should work on the most distributions)</li>
+<li>root access on your Linux system</li>
+<li>Installed TeamSpeak server</li>
+<li>Needed installed softwares by the script
+
+<ul>
+<li>bash</li>
+<li>mktemp</li>
+<li>rsync</li>
+<li>wget</li>
+<li>grep</li>
+<li>sed</li>
+<li>unzip</li>
+<li>mail (for receiving cronjob mails)</li>
+<li>telnet (if you want to inform online clients about updates)</li>
+</ul>
+</li>
+</ul><h3>
+<a name="supports" class="anchor" href="#supports"><span class="octicon octicon-link"></span></a>Supports</h3>
+
+<ul>
+<li>SQLite and MySQL database setups</li>
+<li>TSDNS</li>
+<li>Linux and FreeBSD</li>
+</ul><h3>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h3>
+
+<ul>
+<li>Auto detection of
+
+<ul>
+<li>TeamSpeak server instances installation directories</li>
+<li>Installed and latest TeamSpeak server version as well as architecture
+
+<ul>
+<li>You may will test the latest version for a while, so you can set 'your' latest version (View parameter '--latest-version' with './TS3UpdateScript.sh --help')</li>
+</ul>
+</li>
+<li>File permissions of current installed TeamSpeak server</li>
+<li>Used database type</li>
+<li>TSDNS usage</li>
+<li>ServerQuery Port</li>
+<li>Latest version of the TS3UpdateScript self</li>
+</ul>
+</li>
+<li>Backup as rollback, if the newer TeamSpeak server version is not compatible or not working</li>
+<li>Deletes old logs, if you want to (parameter '--delete-old-logs')</li>
+<li>Informs online clients via poke message, if you want to (parameter '--inform-online-clients')</li>
+<li>Keeps rollback Backup, if you want to (parameter '--keep-backups')</li>
+<li>Cronjob (CRON) for (weekly) fully automated update process (it's manually adjustable)</li>
+</ul><h3>
+<a name="work-flow-of-the-script" class="anchor" href="#work-flow-of-the-script"><span class="octicon octicon-link"></span></a>Work flow of the script</h3>
+
+<p>First it will check, if a newer version for the script self is available and afterwards it will check your installed version of each instance against the latest available version from teamspeak.de. It also will detect, if you are using TSDNS, SQLite or MySQL database and so on. If a newer version is available, the script will do following steps:</p>
+
+<ol>
+<li>Inform online clients on all virtual servers (if you want to; parameter '--inform-online-clients' needed)</li>
+<li>Stopp running TSDNS (if used)</li>
+<li>Stopp running server instance gracefully</li>
+<li>Delete old logs (if you want to; parameter '--delete-old-logs' needed)</li>
+<li>Create backup of currently running TeamSpeak 3 server in '/tmp/ts3server_backup/'</li>
+<li>Download latest and named TeamSpeak 3 server files from 4players.de</li>
+<li>Unzip downloaded TeamSpeak 3 server files</li>
+<li>Import licensekey (if available), database and Query IP Black- and Whitelist from backup</li>
+<li>Import TSDNS settings file (if used)</li>
+<li>Delete ts3server.pid, if exists for correct start</li>
+<li>Delete downloaded TeamSpeak 3 server files</li>
+<li>Set ownership and group of files like before update</li>
+<li>Start TSDNS (if was used)</li>
+<li>Add commandline parameter to new ts3server_startscript.sh if INI-file is used</li>
+<li>Start updated server</li>
+<li>Script waits 15 seconds and checks, if the server is running</li>
+<li>If the server is not running, the rollback will be executed</li>
+<li>Clean up system from created and downloaded files for the update process</li>
+</ol><p>Those steps will the script execute for each installed instance, which will be checked.</p>
+
+<p>The files/ directory will not be touched by the script - also not backuped!</p>
+
+<h3>
+<a name="directory-structure---where-can-i-find-which-file" class="anchor" href="#directory-structure---where-can-i-find-which-file"><span class="octicon octicon-link"></span></a>Directory Structure - Where can I find which file?</h3>
+
+<table>
+<thead><tr>
+<th align="left">Path</th>
+<th align="left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left">.</td>
+<td align="left">README.md, TS3UpdateScript.sh, .updateScript.sh and the copy of the license</td>
+</tr>
+<tr>
+<td align="left">./docs/</td>
+<td align="left">Install and upgrade guide as well as changelog</td>
+</tr>
+<tr>
+<td align="left">.configs/</td>
+<td align="left">Configuration files</td>
+</tr>
+</tbody>
+</table><h3>
+<a name="donate" class="anchor" href="#donate"><span class="octicon octicon-link"></span></a>Donate</h3>
+
+<p>TS3UpdateScript is free software and is made available free of charge. Your donation, which is purely optional, supports me at improving the software as well as reducing my costs of this project. If you like the software, please consider a donation. Thank you very much!</p>
+
+<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=7ZRXLSC2UBVWE">https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=7ZRXLSC2UBVWE</a></p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
