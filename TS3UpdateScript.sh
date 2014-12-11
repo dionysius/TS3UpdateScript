@@ -1061,7 +1061,7 @@ while read paths; do
 
 		# Wait 5 minutes, if it is a cronjob
 		if [ "$CRONJOB_AUTO_UPDATE" == "true" ]; then
-			sleep 5m
+#			sleep 5m
 		fi
 
 		# Build download link for the TeamSpeak 3 server download
