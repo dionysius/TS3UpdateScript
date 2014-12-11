@@ -1060,9 +1060,9 @@ while read paths; do
 		fi
 
 		# Wait 5 minutes, if it is a cronjob
-		if [ "$CRONJOB_AUTO_UPDATE" == "true" ]; then
+#		if [ "$CRONJOB_AUTO_UPDATE" == "true" ]; then
 #			sleep 5m
-		fi
+#		fi
 
 		# Build download link for the TeamSpeak 3 server download
 		TS3_SERVER_DOWNLOAD_LINK="http://dl.4players.de/ts/releases/$LATEST_RELEASE/teamspeak3-server_$LINUX_OR_FREEBSD-$ARCHITECTURE-$LATEST_RELEASE.tar.gz"
@@ -1082,7 +1082,7 @@ while read paths; do
 
 		# Stop running TeamSpeak 3 server
 		echo
-		$TEAMSPEAK_DIRECTORY/ts3server_startscript.sh stop || true
+		sudo -u $USER $TEAMSPEAK_DIRECTORY/ts3server_startscript.sh stop || true
 		echo
 
 		# Create Backup of currently installed TeamSpeak 3 server in '/tmp/ts3server_backup/root/of/installed/ts_server'
@@ -1426,7 +1426,7 @@ while read paths; do
 			fi
 		fi
 
-		su -c "$TEAMSPEAK_DIRECTORY/ts3server_startscript.sh start" $USER
+		sudo -u $USER $TEAMSPEAK_DIRECTORY/ts3server_startscript.sh start
 
 		# Check, if the './ts3server_startscript.sh start' command was successfull
 		if [[ $? -eq 0 ]]; then
@@ -1442,7 +1442,7 @@ while read paths; do
 			sleep 15s
 
 			# Check, if TS3 server is still runing
-			TS_SERVER_STATUS=$(su -c "$TEAMSPEAK_DIRECTORY/ts3server_startscript.sh status" $USER)
+			TS_SERVER_STATUS=$(sudo -u $USER $TEAMSPEAK_DIRECTORY/ts3server_startscript.sh status)
 
 			if [[ "$TS_SERVER_STATUS" == "Server is running" ]]; then
 				if [ "$CRONJOB_AUTO_UPDATE" == "true" ]; then
@@ -1484,9 +1484,11 @@ while read paths; do
 
 			# Start TeamSpeak 3 server
 			if [[ "$TEAMSPEAK_DATABASE_TYPE" == "MySQL" ]] || [[ "$TEAMSPEAK_DATABASE_TYPE" == "MariaDB" ]]; then
-				su -c "rm teamspeak3-server_$LINUX_OR_FREEBSD-$ARCHITECTURE-$LATEST_RELEASE.tar.gz && $TEAMSPEAK_DIRECTORY/ts3server_startscript.sh start inifile=ts3server.ini" $USER
+				rm teamspeak3-server_$LINUX_OR_FREEBSD-$ARCHITECTURE-$LATEST_RELEASE.tar.gz
+				sudo -u $USER $TEAMSPEAK_DIRECTORY/ts3server_startscript.sh start inifile=ts3server.ini
 			else
-				su -c "rm teamspeak3-server_$LINUX_OR_FREEBSD-$ARCHITECTURE-$LATEST_RELEASE.tar.gz && $TEAMSPEAK_DIRECTORY/ts3server_startscript.sh start" $USER
+				rm teamspeak3-server_$LINUX_OR_FREEBSD-$ARCHITECTURE-$LATEST_RELEASE.tar.gz
+				sudo -u $USER $TEAMSPEAK_DIRECTORY/ts3server_startscript.sh start
 			fi
 
 			if [ "$CRONJOB_AUTO_UPDATE" == "true" ]; then
